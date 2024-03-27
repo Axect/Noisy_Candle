@@ -1,4 +1,4 @@
-# Noisy Regression with Rust ML Libraries
+# Noisy Regression with Candle
 
 This project demonstrates how to perform regression on noisy data using various Rust libraries for machine learning. The main libraries used in this project are:
 

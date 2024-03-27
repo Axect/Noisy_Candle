@@ -10,7 +10,7 @@ const SEED: u64 = 42;
 fn main() -> Result<()> {
     let dev = Device::cuda_if_available(0)?;
 
-    let ds = Dataset::<RobustScaler>::generate(800, 200, 1000, &dev)?;
+    let ds = Dataset::<RobustScaler>::generate(1800, 200, 1000, &dev)?;
 
     let model = train(ds.clone(), &dev)?;
     test(ds.clone(), &model, &dev)?;

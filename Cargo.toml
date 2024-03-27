@@ -1,0 +1,12 @@
+[package]
+name = "candle_tut"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+candle-core = { version = "0.4.1", features = ["cuda"] }
+candle-nn = { version = "0.4.1", features = ["cuda"] }
+candle-optimisers = { version = "0.4.0", features = ["cuda"] }
+indicatif = { version = "0.17.8", features = ["rayon"] }
+peroxide = { version = "0.34.7", features = ["parquet"] }
+rayon = "1.10.0"

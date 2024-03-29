@@ -2,7 +2,7 @@
 
 This project demonstrates how to perform regression on noisy data using various Rust libraries for machine learning. The main libraries used in this project are:
 
-- `peroxide`: A library for data generation, preprocessing and saving
+- `peroxide`: A library for data generation, preprocessing and visualization
 - `candle`: A library for defining and training machine learning models
 - `rayon`: A library for parallel processing
 - `indicatif`: A library for progress tracking and visualization
@@ -21,32 +21,23 @@ This project demonstrates how to perform regression on noisy data using various 
 
 3. Model Evaluation and Visualization
    - Evaluate the trained model on the test dataset and calculate the MSE.
-   - Save the test results to a parquet file.
-   - Visualize the predictions using `matplotlib`.
+   - Visualize the predictions using `plot` feature of `peroxide` library.
 
 ## Prerequisites
 
 - Rust
 - Python
 - Required python libraries
-  - `pandas`
-  - `pyarrow`
   - `matplotlib`
-  - `scienceplots`
+  - `scienceplots` (optional)
 
 ## Usage
 
-1. Run the Rust code:
+Just run the Rust code:
 
-   ```sh
-   cargo run --release
-   ```
-
-2. Run the visualization script:
-
-   ```sh
-   python pq_plot.py
-   ```
+```sh
+cargo run --release
+```
 
 ## Results
 

@@ -35,18 +35,38 @@ fn main() -> Result<()> {
     let mut test_ics_x = test_x.into_iter().enumerate().collect::<Vec<_>>();
     test_ics_x.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap());
     let (test_ics, test_x): (Vec<_>, Vec<_>) = test_ics_x.into_iter().unzip();
+    let test_x = test_x.into_iter().map(|x| x as f64).collect::<Vec<_>>();
     let (test_y, y_hat): (Vec<_>, Vec<_>) = test_ics.into_iter()
-        .map(|i| (test_y[i], y_hat[i]))
+        .map(|i| (test_y[i] as f64, y_hat[i] as f64))
         .unzip();
 
-    let mut df = DataFrame::new(vec![]);
-    df.push("x", Series::new(test_x));
-    df.push("y", Series::new(test_y));
-    df.push("y_hat", Series::new(y_hat));
+    let mut plt = Plot2D::new();
+    plt
+        .set_domain(test_x)
+        .insert_image(test_y)
+        .insert_image(y_hat)
+        .set_marker(vec![(0, Markers::Point)])
+        .set_plot_type(vec![(0, PlotType::Scatter)])
+        .set_style(PlotStyle::Nature)
+        .set_color(vec![(1, "red")])
+        .set_alpha(vec![(0, 0.5), (1, 1.0)])
+        .set_legend(vec!["Data", "Model"])
+        .set_xlabel(r"$x$")
+        .set_ylabel(r"$y$")
+        .tight_layout()
+        .set_dpi(600)
+        .set_path("test_plot.png")
+        .savefig().unwrap();
 
-    df.print();
 
-    df.write_parquet("test_data.parquet", CompressionOptions::Uncompressed).unwrap();
+    //let mut df = DataFrame::new(vec![]);
+    //df.push("x", Series::new(test_x));
+    //df.push("y", Series::new(test_y));
+    //df.push("y_hat", Series::new(y_hat));
+
+    //df.print();
+
+    //df.write_parquet("test_data.parquet", CompressionOptions::Uncompressed).unwrap();
 
     Ok(())
 }

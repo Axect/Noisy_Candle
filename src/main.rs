@@ -58,7 +58,6 @@ fn main() -> Result<()> {
         .set_path("test_plot.png")
         .savefig().unwrap();
 
-
     Ok(())
 }
 

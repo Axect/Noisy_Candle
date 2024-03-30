@@ -59,15 +59,6 @@ fn main() -> Result<()> {
         .savefig().unwrap();
 
 
-    //let mut df = DataFrame::new(vec![]);
-    //df.push("x", Series::new(test_x));
-    //df.push("y", Series::new(test_y));
-    //df.push("y_hat", Series::new(y_hat));
-
-    //df.print();
-
-    //df.write_parquet("test_data.parquet", CompressionOptions::Uncompressed).unwrap();
-
     Ok(())
 }
 
@@ -261,13 +252,13 @@ impl Scaler for RobustScaler {
 pub struct IdentityScaler;
 
 impl Scaler for IdentityScaler {
-    fn new(x: &[f32]) -> Self { Self }
+    fn new(_: &[f32]) -> Self { Self }
     fn scale(&self, x: f32) -> f32 { x }
     fn unscale(&self, x: f32) -> f32 { x }
 }
 
 // ┌─────────────────────────────────────────────────────────┐
-//  Nerual Network
+//  Neural Network
 // └─────────────────────────────────────────────────────────┘
 pub struct MLP {
     lns: Vec<Linear>

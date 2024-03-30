@@ -269,7 +269,8 @@ pub struct HyperParams {
     pub hidden_size: usize,
     pub hidden_depth: usize,
     pub learning_rate: f64,
-    pub epoch: usize
+    pub epoch: usize,
+    pub batch_size: usize
 }
 
 impl MLP {
@@ -311,8 +312,9 @@ pub fn train<S: Scaler>(ds: Dataset<S>, dev: &Device) -> Result<MLP> {
     let hparam = HyperParams {
         hidden_size: 16,
         hidden_depth: 4,
-        learning_rate: 1e-3,
-        epoch: 1000
+        learning_rate: 1e-4,
+        epoch: 1000,
+        batch_size: 100
     };
     let model = MLP::new(vs, hparam)?;
 
@@ -329,6 +331,8 @@ pub fn train<S: Scaler>(ds: Dataset<S>, dev: &Device) -> Result<MLP> {
     let mut train_loss = 0f32;
     let mut val_loss = 0f32;
 
+    let train_batch = train_x.dims()[0] / hparam.batch_size;
+
     let pb = ProgressBar::new(hparam.epoch as u64);
     pb.set_style(ProgressStyle::default_bar()
         .template("{spinner:.green} [{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} ({eta}) {msg}")
@@ -340,10 +344,28 @@ pub fn train<S: Scaler>(ds: Dataset<S>, dev: &Device) -> Result<MLP> {
         let msg = format!("epoch: {}, train_loss: {:.4e}, val_loss: {:.4e}", epoch, train_loss, val_loss);
         pb.set_message(msg);
 
-        let y_hat = model.forward(&train_x)?;
-        let loss = loss::mse(&y_hat, &train_y)?;
-        adam.backward_step(&loss)?;
-        train_loss = loss.to_scalar()?;
+        let mut ics = (0u32 .. train_x.dims()[0] as u32).collect::<Vec<_>>();
+        ics.shuffle(&mut thread_rng());
+
+        let mut epoch_loss = 0f32;
+        for i in 0 .. train_batch {
+            let batch_ics = Tensor::from_slice(
+                &ics[i * hparam.batch_size .. (i + 1) * hparam.batch_size],
+                hparam.batch_size,
+                dev
+            )?;
+            let batch_x = train_x.index_select(&batch_ics, 0)?;
+            let batch_y = train_y.index_select(&batch_ics, 0)?;
+
+            let y_hat = model.forward(&batch_x)?;
+            let loss = loss::mse(&y_hat, &batch_y)?;
+            adam.backward_step(&loss)?;
+
+            let loss: f32 = loss.to_scalar()?;
+            epoch_loss += loss;
+        }
+        epoch_loss /= train_batch as f32;
+        train_loss = epoch_loss;
 
         let y_hat = model.forward(&val_x)?;
         let loss = loss::mse(&y_hat, &val_y)?;
